@@ -23,8 +23,8 @@ Otherwise your changes will be overwritten the next time you save the extension 
 
     <f:form action="create"  name="newPerson" object="{newPerson}">
  
-    <f:render partial="Person/FormFields" arguments="{companies:companies}" />
-    <div class="d-flex flex-row justify-content-center align-items-center mt-4"><f:form.submit class="btn btn-primary" value="Create new" /></div>
+      <f:render partial="Person/FormFields" arguments="{companies:companies}" />
+      <div class="d-flex flex-row justify-content-center align-items-center mt-4"><f:form.submit id="submit" class="btn btn-primary" value="Create new" /></div>
     </f:form>
   </div>
 </f:section>

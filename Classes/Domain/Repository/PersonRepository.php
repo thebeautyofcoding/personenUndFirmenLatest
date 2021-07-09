@@ -19,73 +19,39 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
  */
 class PersonRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 {
-
-
-
     public $personRepository;
-
-
-
-        /**
-     * @param \Heiner\Heiner\Domain\Repository\PersonRepository $companyRepository
+    
+    /**
+     * @param \Heiner\Heiner\Domain\Repository\PersonRepository $personRepository
      */
+    
     public function injectPersonRepository(\Heiner\Heiner\Domain\Repository\PersonRepository $personRepository)
     {
         $this->personRepository = $personRepository;
     }
-
-    /**
-     * @param $firmaid
-     */
-    public function getPersonsCompany($firmaid)
-    {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_heiner_domain_model_person');
-        $result = $queryBuilder->select('p.anrede', 'p.vorname', 'p.nachname', 'c.name', 'c.unterzeile', 'c.strasse', 'c.plz', 'c.ort', 'c.telefon', 'c.fax', 'c.web')->from('tx_heiner_domain_model_person', 'p')->join(
-        'p', 
-        'tx_heiner_domain_model_company', 
-        'c', 
-        $queryBuilder->expr()->eq('p.firma', $queryBuilder->quoteIdentifier('c.uid'))
-        )->where($queryBuilder->expr()->eq('c.uid', $queryBuilder->createNamedParameter($firmaid, \PDO::PARAM_INT)))->execute()->fetchAll();
-
- 
-        return $result;
-    }
     
-
-    public function findAllPersonsBelongingToCompany($firmaId){
-        
-       
-     
-        
-        // $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_heiner_domain_model_person');
-        // $persons=$queryBuilder->select('anrede', 'vorname', 'nachname', 'email', 'telefon', 'handy', 'firma')
-        // ->from('tx_heiner_domain_model_person')
-        // ->where($queryBuilder->expr()->eq('tx_heiner_domain_model_person.firma',$queryBuilder->createNamedParameter($firmaId, \PDO::PARAM_INT)))->execute()->fetchAll();
-        
-      
-       
-   
-        //  return $persons;
-      
+    /**
+     * custom method: Get all Persons for a specific company
+     * @param $firmaid
+     * @return \Heiner\Heiner\Domain\Model\Person $persons
+     */
+    public function findAllPersonsBelongingToCompany(int $firmaId){
        $query= $this->personRepository->createQuery();
         $query->matching(
             $query->equals('firma.uid', $firmaId)
-
         );
         $persons=$query->execute();
+     
+
         return $persons;
     }
 
 
-    public function pagination(int $currentPage)
-
+    public function pagination(int $currentPage, int $limit)
     {
-  
-
         $total = $this->createQuery()->count('uid');
         $data['pages'] = [];
         $linksShown = (int)3;
-        $limit = 2;
         $totalPages = (int) ceil($total / $limit);
         $total = (int) $total;
         for (
@@ -103,31 +69,23 @@ class PersonRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
             ->setOffset($offset)
             ->setLimit($limit)
             ->execute();
- 
+        $data['totalPages']=$totalPages;
         $data['persons'] = $persons;
  
         return $data;
-
-}
+    }
     /**
-     * action delete
-     * 
+     *custom method: Delete multiple entries at once
+     * @param array $personsToDelete
      * @var \Heiner\Heiner\Domain\Model\Person $person
      * @return void
      */
-public function deleteMultipleEntries($personsToDelete)
+    
+    public function deleteMultipleEntries(array $personsToDelete)
     {
-      
-     
-
         foreach($personsToDelete as $person){
             $personToDelete=$this->findByUid($person);
-            $this->remove( $personToDelete);
-     
-           
+            $this->remove($personToDelete);
         }
-      
-        return true;
-
     }
 }

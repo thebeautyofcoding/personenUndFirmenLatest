@@ -28,7 +28,17 @@
 <label class="form-label" for="firma">
 	<f:translate key="tx_heiner_domain_model_person.firma" /> <span class="required">(required)</span>
 </label><br />
-<f:form.select property="firma" options="{companies}" optionValueField="uid" optionLabelField="name" class="form-control" />
+
+<f:if condition="{companies} ">
+	
+	<f:form.select property="firma" id="select" options="{companies}" optionValueField="uid" optionLabelField="name" class="form-control" prependOptionValue=""  prependOptionLabel="Bitte eine Firma auswählen!"/>
+	
+</f:if>
+<f:if condition="{data.allCompanies}">
+
+	<f:form.select  property="firma"   options="{data.allCompanies}" optionValueField="uid" optionLabelField="name" class="form-control"/>
+</f:if>
+
 </div>
 
 
